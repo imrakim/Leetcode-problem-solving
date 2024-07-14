@@ -2,39 +2,42 @@ function expect(val) {
     return {
         toBe(expected) {
             if (val === expected) {
-                console.log('Success');
+                return true;
             } else {
-                console.error(`Error: expected ${val} to be ${expected}`);
+                throw new Error("Not Equal");
             }
         },
-        toEqual(expected) {
-            const isEqual = (a, b) => {
-                if (a === b) return true;
-
-                if (typeof a !== typeof b) return false;
-
-                if (typeof a === 'object' && a !== null && b !== null) {
-                    if (Object.keys(a).length !== Object.keys(b).length) return false;
-
-                    for (let key in a) {
-                        if (!isEqual(a[key], b[key])) return false;
-                    }
-                    return true;
-                }
-                return false;
-            };
-
-            if (isEqual(val, expected)) {
-                console.log('Success');
+        notToBe(expected) {
+            if (val !== expected) {
+                return true;
             } else {
-                console.error(`Error: expected ${JSON.stringify(val)} to equal ${JSON.stringify(expected)}`);
+                throw new Error("Equal");
             }
         }
     };
 }
 
 // Example usage:
-expect(5).toBe(5); // Success
-expect(5).toBe(4); // Error: expected 5 to be 4
-expect({ a: 1 }).toEqual({ a: 1 }); // Success
-expect({ a: 1 }).toEqual({ a: 2 }); // Error: expected {"a":1} to equal {"a":2}
+try {
+    console.log(expect(5).toBe(5)); // true
+} catch (e) {
+    console.error(e.message);
+}
+
+try {
+    console.log(expect(5).toBe(4)); // Error: Not Equal
+} catch (e) {
+    console.error(e.message);
+}
+
+try {
+    console.log(expect(5).notToBe(4)); // true
+} catch (e) {
+    console.error(e.message);
+}
+
+try {
+    console.log(expect(5).notToBe(5)); // Error: Equal
+} catch (e) {
+    console.error(e.message);
+}
